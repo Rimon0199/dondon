@@ -1,9 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Question } from "../types";
 
-// Initialize Gemini AI Client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 // Key for storing seen question hashes in localStorage
 const SEEN_QUESTIONS_KEY = 'dhandhan_seen_questions';
 
@@ -40,11 +37,15 @@ const generateHash = (str: string): string => {
 
 export const generateQuizQuestions = async (count: number = 10): Promise<Question[]> => {
   try {
+    // Initialize Gemini AI Client right before making an API call as per SDK guidelines
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    
     // We intentionally ask for a few more to filter out duplicates if needed
     const requestCount = count + 3;
     
+    // Using gemini-3-pro-preview for complex reasoning task of generating expert-level multiple choice questions
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-3-pro-preview",
       contents: `Generate ${requestCount} EXTREMELY DIFFICULT, EXPERT-LEVEL multiple-choice quiz questions in Bengali (Bangla).
       
       CRITICAL INSTRUCTIONS:
